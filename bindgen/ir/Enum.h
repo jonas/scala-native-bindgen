@@ -28,7 +28,8 @@ class Enum : public Type, public std::enable_shared_from_this<Enum> {
     std::shared_ptr<TypeDef> generateTypeDef();
 
     std::string getName() const;
-    std::string str() const override;
+    std::string str() const;
+    bool usesType(std::shared_ptr<Type> type) const;
 
     friend llvm::raw_ostream &operator<<(llvm::raw_ostream &s, const Enum &e);
 

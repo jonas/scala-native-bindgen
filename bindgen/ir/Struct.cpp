@@ -31,8 +31,7 @@ std::shared_ptr<TypeDef> Struct::generateTypeDef() {
         // its manipulation
         return std::make_shared<TypeDef>(
             getAliasType(),
-            std::make_shared<ArrayType>(std::make_shared<PrimitiveType>("Byte"),
-                                        typeSize));
+            ArrayType::of(PrimitiveType::BYTE, typeSize));
     }
 }
 
@@ -104,7 +103,7 @@ bool Struct::usesType(std::shared_ptr<Type> type) const {
 
 Union::Union(std::string name, std::vector<Field *> fields, uint64_t maxSize)
     : StructOrUnion(std::move(name), std::move(fields)),
-      ArrayType(std::make_shared<PrimitiveType>("Byte"), maxSize) {}
+      ArrayType(PrimitiveType::BYTE, maxSize) {}
 
 std::shared_ptr<TypeDef> Union::generateTypeDef() {
     return std::make_shared<TypeDef>(getTypeAlias(), shared_from_this());

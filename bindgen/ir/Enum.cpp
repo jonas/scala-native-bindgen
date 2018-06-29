@@ -23,6 +23,10 @@ std::string Enum::str() const {
     return type->str();
 }
 
+bool Enum::usesType(std::shared_ptr<Type> type) const {
+    return this == type.get() || this->type == type;
+}
+
 llvm::raw_ostream &operator<<(llvm::raw_ostream &s, const Enum &e) {
     for (auto enumerator : e.enumerators) {
         std::string enumeratorName;

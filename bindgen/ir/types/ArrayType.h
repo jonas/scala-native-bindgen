@@ -13,6 +13,8 @@ class ArrayType : public Type {
 
     std::string str() const override;
 
+    static std::shared_ptr<Type> of(std::shared_ptr<Type> type, uint64_t size);
+
   private:
     const uint64_t size;
     std::shared_ptr<Type> elementsType;

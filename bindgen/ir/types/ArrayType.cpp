@@ -14,3 +14,7 @@ bool ArrayType::usesType(std::shared_ptr<Type> type) const {
 }
 
 ArrayType::~ArrayType() {}
+
+std::shared_ptr<Type> ArrayType::of(std::shared_ptr<Type> type, uint64_t size) {
+    return std::make_shared<ArrayType>(type, size);
+}

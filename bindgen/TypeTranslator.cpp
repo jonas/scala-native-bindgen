@@ -6,29 +6,29 @@
 TypeTranslator::TypeTranslator(clang::ASTContext *ctx_, IR &ir)
     : ctx(ctx_), ir(ir), typeMap() {
     // Native Types
-    typeMap["void"] = std::make_shared<PrimitiveType>("Unit");
-    typeMap["bool"] = std::make_shared<PrimitiveType>("native.CBool");
-    typeMap["_Bool"] = std::make_shared<PrimitiveType>("native.CBool");
-    typeMap["char"] = std::make_shared<PrimitiveType>("native.CChar");
-    typeMap["signed char"] = std::make_shared<PrimitiveType>("native.CSignedChar");
-    typeMap["unsigned char"] = std::make_shared<PrimitiveType>("native.CUnsignedChar");
-    typeMap["short"] = std::make_shared<PrimitiveType>("native.CShort");
-    typeMap["unsigned short"] = std::make_shared<PrimitiveType>("native.CUnsignedShort");
-    typeMap["int"] = std::make_shared<PrimitiveType>("native.CInt");
-    typeMap["long int"] = std::make_shared<PrimitiveType>("native.CLongInt");
+    typeMap["void"] = PrimitiveType::of("Unit");
+    typeMap["bool"] = PrimitiveType::of("native.CBool");
+    typeMap["_Bool"] = PrimitiveType::of("native.CBool");
+    typeMap["char"] = PrimitiveType::of("native.CChar");
+    typeMap["signed char"] = PrimitiveType::of("native.CSignedChar");
+    typeMap["unsigned char"] = PrimitiveType::of("native.CUnsignedChar");
+    typeMap["short"] = PrimitiveType::of("native.CShort");
+    typeMap["unsigned short"] = PrimitiveType::of("native.CUnsignedShort");
+    typeMap["int"] = PrimitiveType::of("native.CInt");
+    typeMap["long int"] = PrimitiveType::of("native.CLongInt");
     typeMap["unsigned int"] = PrimitiveType::UNSIGNED_INT;
-    typeMap["unsigned long int"] = std::make_shared<PrimitiveType>("native.CUnsignedLongInt");
+    typeMap["unsigned long int"] = PrimitiveType::of("native.CUnsignedLongInt");
     typeMap["long"] = PrimitiveType::LONG;
     typeMap["unsigned long"] = PrimitiveType::UNSIGNED_LONG;
-    typeMap["long long"] = std::make_shared<PrimitiveType>("native.CLongLong");
-    typeMap["unsigned long long"] = std::make_shared<PrimitiveType>("native.CUnsignedLongLong");
-    typeMap["size_t"] = std::make_shared<PrimitiveType>("native.CSize");
-    typeMap["ptrdiff_t"] = std::make_shared<PrimitiveType>("native.CPtrDiff");
-    typeMap["wchar_t"] = std::make_shared<PrimitiveType>("native.CWideChar");
-    typeMap["char16_t"] = std::make_shared<PrimitiveType>("native.CChar16");
-    typeMap["char32_t"] = std::make_shared<PrimitiveType>("native.CChar32");
-    typeMap["float"] = std::make_shared<PrimitiveType>("native.CFloat");
-    typeMap["double"] = std::make_shared<PrimitiveType>("native.CDouble");
+    typeMap["long long"] = PrimitiveType::of("native.CLongLong");
+    typeMap["unsigned long long"] = PrimitiveType::of("native.CUnsignedLongLong");
+    typeMap["size_t"] = PrimitiveType::of("native.CSize");
+    typeMap["ptrdiff_t"] = PrimitiveType::of("native.CPtrDiff");
+    typeMap["wchar_t"] = PrimitiveType::of("native.CWideChar");
+    typeMap["char16_t"] = PrimitiveType::of("native.CChar16");
+    typeMap["char32_t"] = PrimitiveType::of("native.CChar32");
+    typeMap["float"] = PrimitiveType::of("native.CFloat");
+    typeMap["double"] = PrimitiveType::of("native.CDouble");
 }
 
 std::shared_ptr<Type>
@@ -67,15 +67,14 @@ TypeTranslator::translatePointer(const clang::QualType &pte,
 
         // Take care of void*
         if (as->getKind() == clang::BuiltinType::Void) {
-            return std::make_shared<PointerType>(
-                std::make_shared<PrimitiveType>("Byte"));
+            return std::make_shared<PointerType>(PrimitiveType::BYTE);
         }
 
         // Take care of char*
         if (as->getKind() == clang::BuiltinType::Char_S ||
             as->getKind() == clang::BuiltinType::SChar) {
             // TODO: new PointerType(new PrimitiveType("native.CChar"))
-            return std::make_shared<PrimitiveType>("native.CString");
+            return PrimitiveType::of("native.CString");
         }
     }
 
@@ -102,8 +101,7 @@ TypeTranslator::translateStructOrUnion(const clang::QualType &qtpe) {
         // TODO: Verify that the local part is not a problem
         uint64_t sizeInBits = ctx->getTypeSize(qtpe);
         assert(sizeInBits % 8 == 0);
-        return std::make_shared<ArrayType>(
-            std::make_shared<PrimitiveType>("Byte"), sizeInBits / 8);
+        return ArrayType::of(PrimitiveType::BYTE, sizeInBits / 8);
     }
 
     return translateStructOrUnionOrEnum(qtpe);
@@ -117,10 +115,10 @@ TypeTranslator::translateConstantArray(const clang::ConstantArrayType *ar,
     if (elementType == nullptr) {
         llvm::errs() << "Failed to translate array type "
                      << ar->getElementType().getAsString() << "\n";
-        elementType = std::make_shared<PrimitiveType>("Byte");
+        elementType = PrimitiveType::BYTE;
     }
 
-    return std::make_shared<ArrayType>(elementType, size);
+    return ArrayType::of(elementType, size);
 }
 
 std::shared_ptr<Type> TypeTranslator::translate(const clang::QualType &qtpe,
@@ -131,9 +129,8 @@ std::shared_ptr<Type> TypeTranslator::translate(const clang::QualType &qtpe,
     if (typeEquals(tpe, avoid)) {
         // This is a type that we want to avoid the usage.
         // Êxample: A struct that has a pointer to itself
-        uint64_t size = ctx->getTypeSize(tpe);
-        return std::make_shared<ArrayType>(
-            std::make_shared<PrimitiveType>("Byte"), size);
+        uint64_t sizeInBits = ctx->getTypeSize(tpe);
+        return ArrayType::of(PrimitiveType::BYTE, sizeInBits / 8);
     }
 
     if (tpe->isFunctionPointerType()) {

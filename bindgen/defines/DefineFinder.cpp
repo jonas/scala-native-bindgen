@@ -44,7 +44,7 @@ void DefineFinder::MacroDefined(const clang::Token &macroNameTok,
                                 stringToken.getLength());
             ir.addLiteralDefine(
                 macroName, "c" + literal,
-                std::make_shared<PrimitiveType>("native.CString"));
+                PrimitiveType::of("native.CString"));
         } else if (tokens->size() == 1 &&
                    (*tokens)[0].getKind() == clang::tok::identifier) {
             // token might be a variable
@@ -154,7 +154,7 @@ void DefineFinder::addNumericConstantDefine(const std::string &macroName,
             scalaLiteral = "-" + scalaLiteral;
         }
         ir.addLiteralDefine(macroName, scalaLiteral,
-                            std::make_shared<PrimitiveType>(type));
+                            PrimitiveType::of(type));
     }
 }
 
