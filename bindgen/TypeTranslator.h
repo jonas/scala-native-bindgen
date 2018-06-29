@@ -19,7 +19,7 @@ class TypeTranslator {
 
     void addAlias(std::string cName, std::shared_ptr<Type> type);
 
-    std::string getTypeFromTypeMap(std::string cType);
+    std::shared_ptr<Type> getTypeFromTypeMap(std::string cType);
 
   private:
     clang::ASTContext *ctx;
@@ -28,7 +28,7 @@ class TypeTranslator {
     /**
      * Primitive types
      */
-    std::map<std::string, std::string> typeMap;
+    std::map<std::string, std::shared_ptr<Type>> typeMap;
 
     /**
      * Maps C struct, union or enum name to Type alias

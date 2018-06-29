@@ -7,9 +7,9 @@ std::string Enumerator::getName() { return name; }
 
 int64_t Enumerator::getValue() { return value; }
 
-Enum::Enum(std::string name, std::string type,
+Enum::Enum(std::string name, std::shared_ptr<Type> type,
            std::vector<Enumerator> enumerators)
-    : PrimitiveType(std::move(type)), name(std::move(name)),
+    : name(std::move(name)), type(type),
       enumerators(std::move(enumerators)) {}
 
 bool Enum::isAnonymous() const { return name.empty(); }
@@ -17,6 +17,10 @@ bool Enum::isAnonymous() const { return name.empty(); }
 std::shared_ptr<TypeDef> Enum::generateTypeDef() {
     assert(!isAnonymous());
     return std::make_shared<TypeDef>("enum_" + name, shared_from_this());
+}
+
+std::string Enum::str() const {
+    return type->str();
 }
 
 llvm::raw_ostream &operator<<(llvm::raw_ostream &s, const Enum &e) {
@@ -30,17 +34,17 @@ llvm::raw_ostream &operator<<(llvm::raw_ostream &s, const Enum &e) {
         s << "  final val " << enumeratorName;
         std::string type;
         if (e.isAnonymous()) {
-            type = e.getType();
+            type = e.type->str();
         } else {
             type = "enum_" + e.name;
         }
         s << ": " << type << " = " << std::to_string(enumerator.getValue());
 
-        if (e.getType() == "native.CLong") {
+        if (e.type == PrimitiveType::LONG) {
             s << "L";
-        } else if (e.getType() == "native.CUnsignedInt") {
+        } else if (e.type == PrimitiveType::UNSIGNED_INT) {
             s << ".toUInt";
-        } else if (e.getType() == "native.CUnsignedLong") {
+        } else if (e.type == PrimitiveType::UNSIGNED_LONG) {
             s << "L.toULong";
         }
         s << "\n";

@@ -27,7 +27,7 @@ class IR {
     /**
      * @return type alias for the enum
      */
-    std::shared_ptr<Type> addEnum(std::string name, const std::string &type,
+    std::shared_ptr<Type> addEnum(std::string name, std::shared_ptr<Type> type,
                                   std::vector<Enumerator> enumerators);
 
     /**

@@ -64,7 +64,7 @@ bool TreeVisitor::VisitEnumDecl(clang::EnumDecl *enumdecl) {
         enumerators.emplace_back(en->getNameAsString(), value);
     }
 
-    std::string scalaType = typeTranslator.getTypeFromTypeMap(
+    std::shared_ptr<Type> scalaType = typeTranslator.getTypeFromTypeMap(
         enumdecl->getIntegerType().getUnqualifiedType().getAsString());
 
     std::shared_ptr<Type> alias =

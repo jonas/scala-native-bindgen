@@ -16,7 +16,7 @@ void IR::addTypeDef(std::string name, std::shared_ptr<Type> type) {
     typeDefs.push_back(std::make_shared<TypeDef>(std::move(name), type));
 }
 
-std::shared_ptr<Type> IR::addEnum(std::string name, const std::string &type,
+std::shared_ptr<Type> IR::addEnum(std::string name, std::shared_ptr<Type> type,
                                   std::vector<Enumerator> enumerators) {
     std::shared_ptr<Enum> e =
         std::make_shared<Enum>(std::move(name), type, std::move(enumerators));

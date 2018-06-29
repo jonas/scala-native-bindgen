@@ -17,6 +17,10 @@ class PrimitiveType : public Type {
 
     std::string str() const override;
 
+    static std::shared_ptr<Type> LONG;
+    static std::shared_ptr<Type> UNSIGNED_LONG;
+    static std::shared_ptr<Type> UNSIGNED_INT;
+
   private:
     std::string type;
 };

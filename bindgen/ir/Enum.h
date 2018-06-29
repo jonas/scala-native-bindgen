@@ -18,9 +18,9 @@ class Enumerator {
     int64_t value;
 };
 
-class Enum : public PrimitiveType, public std::enable_shared_from_this<Enum> {
+class Enum : public Type, public std::enable_shared_from_this<Enum> {
   public:
-    Enum(std::string name, std::string type,
+    Enum(std::string name, std::shared_ptr<Type> type,
          std::vector<Enumerator> enumerators);
 
     bool isAnonymous() const;
@@ -28,11 +28,13 @@ class Enum : public PrimitiveType, public std::enable_shared_from_this<Enum> {
     std::shared_ptr<TypeDef> generateTypeDef();
 
     std::string getName() const;
+    std::string str() const override;
 
     friend llvm::raw_ostream &operator<<(llvm::raw_ostream &s, const Enum &e);
 
   private:
     std::string name; // might be empty
+    std::shared_ptr<Type> type;
     std::vector<Enumerator> enumerators;
 };
 

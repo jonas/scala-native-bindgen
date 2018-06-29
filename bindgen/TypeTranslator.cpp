@@ -5,31 +5,30 @@
 
 TypeTranslator::TypeTranslator(clang::ASTContext *ctx_, IR &ir)
     : ctx(ctx_), ir(ir), typeMap() {
-
     // Native Types
-    typeMap["void"] = "Unit";
-    typeMap["bool"] = "native.CBool";
-    typeMap["_Bool"] = "native.CBool";
-    typeMap["char"] = "native.CChar";
-    typeMap["signed char"] = "native.CSignedChar";
-    typeMap["unsigned char"] = "native.CUnsignedChar";
-    typeMap["short"] = "native.CShort";
-    typeMap["unsigned short"] = "native.CUnsignedShort";
-    typeMap["int"] = "native.CInt";
-    typeMap["long int"] = "native.CLongInt";
-    typeMap["unsigned int"] = "native.CUnsignedInt";
-    typeMap["unsigned long int"] = "native.CUnsignedLongInt";
-    typeMap["long"] = "native.CLong";
-    typeMap["unsigned long"] = "native.CUnsignedLong";
-    typeMap["long long"] = "native.CLongLong";
-    typeMap["unsigned long long"] = "native.CUnsignedLongLong";
-    typeMap["size_t"] = "native.CSize";
-    typeMap["ptrdiff_t"] = "native.CPtrDiff";
-    typeMap["wchar_t"] = "native.CWideChar";
-    typeMap["char16_t"] = "native.CChar16";
-    typeMap["char32_t"] = "native.CChar32";
-    typeMap["float"] = "native.CFloat";
-    typeMap["double"] = "native.CDouble";
+    typeMap["void"] = std::make_shared<PrimitiveType>("Unit");
+    typeMap["bool"] = std::make_shared<PrimitiveType>("native.CBool");
+    typeMap["_Bool"] = std::make_shared<PrimitiveType>("native.CBool");
+    typeMap["char"] = std::make_shared<PrimitiveType>("native.CChar");
+    typeMap["signed char"] = std::make_shared<PrimitiveType>("native.CSignedChar");
+    typeMap["unsigned char"] = std::make_shared<PrimitiveType>("native.CUnsignedChar");
+    typeMap["short"] = std::make_shared<PrimitiveType>("native.CShort");
+    typeMap["unsigned short"] = std::make_shared<PrimitiveType>("native.CUnsignedShort");
+    typeMap["int"] = std::make_shared<PrimitiveType>("native.CInt");
+    typeMap["long int"] = std::make_shared<PrimitiveType>("native.CLongInt");
+    typeMap["unsigned int"] = PrimitiveType::UNSIGNED_INT;
+    typeMap["unsigned long int"] = std::make_shared<PrimitiveType>("native.CUnsignedLongInt");
+    typeMap["long"] = PrimitiveType::LONG;
+    typeMap["unsigned long"] = PrimitiveType::UNSIGNED_LONG;
+    typeMap["long long"] = std::make_shared<PrimitiveType>("native.CLongLong");
+    typeMap["unsigned long long"] = std::make_shared<PrimitiveType>("native.CUnsignedLongLong");
+    typeMap["size_t"] = std::make_shared<PrimitiveType>("native.CSize");
+    typeMap["ptrdiff_t"] = std::make_shared<PrimitiveType>("native.CPtrDiff");
+    typeMap["wchar_t"] = std::make_shared<PrimitiveType>("native.CWideChar");
+    typeMap["char16_t"] = std::make_shared<PrimitiveType>("native.CChar16");
+    typeMap["char32_t"] = std::make_shared<PrimitiveType>("native.CChar32");
+    typeMap["float"] = std::make_shared<PrimitiveType>("native.CFloat");
+    typeMap["double"] = std::make_shared<PrimitiveType>("native.CDouble");
 }
 
 std::shared_ptr<Type>
@@ -162,7 +161,7 @@ std::shared_ptr<Type> TypeTranslator::translate(const clang::QualType &qtpe,
 
         auto found = typeMap.find(qtpe.getUnqualifiedType().getAsString());
         if (found != typeMap.end()) {
-            return std::make_shared<PrimitiveType>(found->second);
+            return found->second;
         } else {
             return ir.getTypeDefWithName(
                 qtpe.getUnqualifiedType().getAsString());
@@ -174,10 +173,10 @@ void TypeTranslator::addAlias(std::string cName, std::shared_ptr<Type> type) {
     aliasesMap[cName] = type;
 }
 
-std::string TypeTranslator::getTypeFromTypeMap(std::string cType) {
+std::shared_ptr<Type> TypeTranslator::getTypeFromTypeMap(std::string cType) {
     auto it = typeMap.find(cType);
     if (it != typeMap.end()) {
         return (*it).second;
     }
-    return "";
+    return nullptr;
 }
