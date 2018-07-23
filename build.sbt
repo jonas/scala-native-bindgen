@@ -24,8 +24,8 @@ inThisBuild(
       "utf8"
     ),
     scmInfo := Some(
-      ScmInfo(url("https://github.com/kornilova-l/scala-native-bindgen"),
-              "scm:git:git@github.com:kornilova-l/scala-native-bindgen.git")),
+      ScmInfo(url("https://github.com/jonas/scala-native-bindgen"),
+              "scm:git:git@github.com:jonas/scala-native-bindgen.git")),
     developers := List(
       Developer(
         id = "kornilova-l",
