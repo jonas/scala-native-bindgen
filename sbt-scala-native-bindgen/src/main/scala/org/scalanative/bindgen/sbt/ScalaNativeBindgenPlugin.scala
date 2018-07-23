@@ -120,7 +120,6 @@ object ScalaNativeBindgenPlugin extends AutoPlugin {
         },
         nativeBindgenPackage := None,
         nativeBindgenExclude := None,
-        resourceDirectories in nativeBindgen := resourceDirectories.value,
         sourceGenerators += Def.task { Seq(nativeBindgen.value) },
         name in nativeBindgen := "ScalaNativeBindgen",
         libraryDependencies ++= {
